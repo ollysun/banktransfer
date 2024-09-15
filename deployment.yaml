@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: money-transfer-deployment
+  labels:
+    app: money-transfer
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: money-transfer
+  template:
+    metadata:
+      labels:
+        app: money-transfer
+    spec:
+      containers:
+        - name: money-transfer
+          image: money-transfer-service:latest
+          ports:
+            - containerPort: 8989
+          env:
+            - name: SPRING_PROFILES_ACTIVE
+              value: prod
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: money-transfer-service
+spec:
+  type: LoadBalancer
+  selector:
+    app: money-transfer
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 8989
